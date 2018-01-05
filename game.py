@@ -79,7 +79,7 @@ class Board:
         elif self.get_cell(target_loc) == self.get_cell(loc):
             self.set_cell(target_loc, self.get_cell(loc) + 1)
             self.set_cell(loc, 0)
-            self.score += self.get_cell(target_loc)
+            self.score += 2**(self.get_cell(target_loc))
         else:
             raise ValueError('Retarded merge happened')
 
@@ -109,6 +109,34 @@ class Board:
         if legal_move:
             self.post_control()
 
+    def control_up(self):
+        legal_move = False
+        self.rotate()
+        for i, row in enumerate(self.data):
+            legal_move = self.control_row_left(i, row) or legal_move
+        self.rotate()
+        if legal_move:
+            self.post_control()
+
+    def control_down(self):
+        legal_move = False
+        self.rotate()
+        for i, row in enumerate(self.data):
+            row.reverse()
+            legal_move = self.control_row_left(i, row) or legal_move
+            row.reverse()
+        self.rotate()
+        if legal_move:
+            self.post_control()
+
+    def rotate(self):
+        changed = self.data
+        for i, row in enumerate(self.data):
+            for j, cell in enumerate(self.data):
+                changed[i][j] = self.data[j][i]
+        self.data = changed
+
+
     def post_control(self):
         if self.is_full():
             raise ValueError('Game Over')
@@ -126,11 +154,14 @@ testBoard.print_board()
 cmd = raw_input()
 while cmd != "q":
     if cmd == "a":
-        print testBoard.score
         testBoard.control_left()
-        testBoard.print_board()
     if cmd == "d":
-        print testBoard.score
         testBoard.control_right()
-        testBoard.print_board()
+    if cmd == "w":
+        testBoard.control_up()
+    if cmd == "d":
+        testBoard.control_down()
+    print(chr(27) + "[2J")
+    print testBoard.score
+    testBoard.print_board()
     cmd = readchar.readchar()
