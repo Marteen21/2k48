@@ -1,5 +1,6 @@
 import random
 import readchar
+from copy import copy, deepcopy
 
 
 class Loc:
@@ -130,11 +131,11 @@ class Board:
             self.post_control()
 
     def rotate(self):
-        changed = self.data
+        changed = deepcopy(self.data)
         for i, row in enumerate(self.data):
             for j, cell in enumerate(self.data):
                 changed[i][j] = self.data[j][i]
-        self.data = changed
+        self.data = deepcopy(changed)
 
 
     def post_control(self):
@@ -149,6 +150,7 @@ testBoard.print_board()
 print ""
 
 testBoard.add_new_element()
+testBoard.add_new_element()
 testBoard.print_board()
 
 cmd = raw_input()
@@ -159,7 +161,7 @@ while cmd != "q":
         testBoard.control_right()
     if cmd == "w":
         testBoard.control_up()
-    if cmd == "d":
+    if cmd == "s":
         testBoard.control_down()
     print(chr(27) + "[2J")
     print testBoard.score
